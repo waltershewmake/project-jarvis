@@ -12,6 +12,7 @@ import router from '@adonisjs/core/services/router';
 import { eq } from 'drizzle-orm';
 import { db } from '#database/index';
 import { User } from '#database/schema/user';
+import { middleware } from '#start/kernel';
 
 router.get('/', async () => {
   return {
@@ -32,3 +33,9 @@ router.post('login', async ({ request, auth, response }) => {
 
   return response.unauthorized('Invalid email or password');
 });
+
+router
+  .get('me', async ({ auth }) => {
+    return auth.getUserOrFail();
+  })
+  .use(middleware.auth());
