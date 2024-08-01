@@ -1,0 +1,17 @@
+# dpcker compose with postgres install with pgvector extension
+
+version: '3.8'
+
+services:
+  db:
+    image: ankane/pgvector:latest 
+    container_name: jarvis-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jarvis
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/db:/var/lib/postgresql/data

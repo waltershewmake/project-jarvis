@@ -1,0 +1,25 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "stream",
+  "tasks": {
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["build/**"]
+    },
+    "ts-lint": {
+      "dependsOn": ["^topo"],
+      "outputs": ["./tsconfig.tsbuildinfo"]
+    },
+    "check": {
+      "dependsOn": ["format", "lint", "ts-lint"]
+    },
+    "test": {},
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
