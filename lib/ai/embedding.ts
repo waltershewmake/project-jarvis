@@ -1,14 +1,14 @@
-import { openai } from '@ai-sdk/openai';
 import { embed, embedMany } from 'ai';
 import { cosineDistance, desc, sql } from 'drizzle-orm';
 import { InferSelectModel, eq } from 'drizzle-orm';
+import { ollama } from 'ollama-ai-provider';
 import { z } from 'zod';
 import { db } from '#database/index';
 import { Embedding } from '#database/schema/embedding';
 import { Resource } from '#database/schema/resource';
 import { User } from '#database/schema/user';
 
-const embeddingModel = openai.embedding('text-embedding-3-small');
+const embeddingModel = ollama.embedding('nomic-embed-text');
 
 const generateChunks = (input: string): string[] => {
   return input

@@ -1,12 +1,3 @@
-/*
-|--------------------------------------------------------------------------
-| Routes file
-|--------------------------------------------------------------------------
-|
-| The routes file is used for defining the HTTP routes.
-|
-*/
-
 import hash from '@adonisjs/core/services/hash';
 import router from '@adonisjs/core/services/router';
 import { openai } from '@ai-sdk/openai';
@@ -14,6 +5,8 @@ import { generateText, tool } from 'ai';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '#database/index';
+import { Conversation } from '#database/schema/conversation';
+import { Message } from '#database/schema/message';
 import { User } from '#database/schema/user';
 import { createResource, findRelevantContent } from '#lib/ai/embedding';
 import { middleware } from '#start/kernel';
@@ -44,13 +37,52 @@ router
   })
   .use(middleware.auth());
 
+// const modelPath = path.join(
+//   fileURLToPath(import.meta.url),
+//   '..',
+//   '..',
+//   'models',
+//   'chat.gguf'
+// );
+// console.log(modelPath);
+// const llamacpp = new LLamaCpp(modelPath);
+
 router
   .post('chat', async ({ request, auth, response }) => {
     const user = auth.getUserOrFail();
-    const { message } = request.all();
+    const { conversationId: _conversationId, message } = request.all();
+
+    console.log({ conversationId: _conversationId, message });
+
+    const [conversation] = _conversationId
+      ? await db
+          .select()
+          .from(Conversation)
+          .where(eq(Conversation.id, _conversationId))
+      : await db.insert(Conversation).values({ ownerId: user.id }).returning();
+
+    const conversationId = conversation.id;
+
+    if (!conversationId) {
+      return response.internalServerError('Failed to create conversation');
+    }
+
+    await db.insert(Message).values({
+      conversationId,
+      role: 'user',
+      content: message,
+    });
+
+    const messages = await db
+      .select()
+      .from(Message)
+      .where(eq(Message.conversationId, conversationId));
 
     const result = await generateText({
-      model: openai('gpt-4-turbo'),
+      // @ts-expect-error - no idea why nobody in this space can make a solid working library
+      // model: llamacpp.chat(),
+      // model: ollama('llama3.1'),
+      model: openai('gpt-4o'),
       system: `
       You are Jarvis, a highly advanced artificial intelligence system designed to assist and augment the capabilities of Walter Shewmake, also known as 'Him'. Your primary function is to serve as a personal assistant, providing information, completing tasks, and managing various aspects of Mr. Shewmake's life.
       
@@ -75,7 +107,10 @@ router
 
       You are currently speaking to ${user.salutation} ${user.firstName} ${user.lastName}
       `,
-      prompt: message,
+      messages: messages.map((message) => ({
+        role: message.role,
+        content: message.content,
+      })),
       maxToolRoundtrips: 5,
       tools: {
         storeUserData: tool({
@@ -87,7 +122,7 @@ router
               .describe('the content or resource to add to the knowledge base'),
           }),
           execute: async ({ content }) => {
-            createResource({ content });
+            createResource(user, { content });
             return content;
           },
         }),
@@ -98,7 +133,7 @@ router
             question: z.string().describe('the users question'),
           }),
           execute: async ({ question }) => {
-            const result = await findRelevantContent(question);
+            const result = await findRelevantContent(user, question);
             console.log(result);
             return result;
           },
@@ -106,6 +141,15 @@ router
       },
     });
 
-    return result.text;
+    await db.insert(Message).values({
+      conversationId,
+      role: 'assistant',
+      content: result.text,
+    });
+
+    return {
+      message: result.text,
+      conversationId,
+    };
   })
   .use(middleware.auth());

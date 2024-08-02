@@ -1,3 +1,4 @@
+import EventEmitter from 'node:events';
 import { intro, isCancel, password, spinner, text } from '@clack/prompts';
 import axios from 'axios';
 import { InferSelectModel } from 'drizzle-orm';
@@ -70,9 +71,16 @@ intro(
   `Welcome, ${user.salutation} ${user.lastName}. How may I assist you today?`
 );
 
+EventEmitter.setMaxListeners(Number.POSITIVE_INFINITY);
+
+let conversationId: number | undefined = undefined;
+
 while (true) {
   const input = await text({
     message: 'Type a message',
+    validate: (input) => {
+      if (input.length === 0) return 'Please enter a message';
+    },
   });
 
   if (isCancel(input)) {
@@ -83,10 +91,12 @@ while (true) {
 
   s.start('Thinking...');
   try {
-    const response = await client.post('/chat', {
+    const response = (await client.post('/chat', {
       message: input,
-    });
-    s.stop(JSON.stringify(response.data));
+      conversationId,
+    })) as { data: { message: string; conversationId: number } };
+    conversationId = response.data.conversationId;
+    s.stop(JSON.stringify(response.data.message));
   } catch (error) {
     s.stop(error.response.data.message ?? 'Something went wrong');
   }

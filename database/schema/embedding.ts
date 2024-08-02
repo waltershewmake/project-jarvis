@@ -17,7 +17,7 @@ export const Embedding = pgTable(
     userId: integer('user_id').references(() => User.id),
     resourceId: integer('resource_id').references(() => Resource.id),
 
-    embedding: vector('embedding', { dimensions: 1536 }),
+    embedding: vector('embedding', { dimensions: 768 }),
     content: text('content'),
     createdAt: timestamp('created_at', { mode: 'date', precision: 3 })
       .notNull()
