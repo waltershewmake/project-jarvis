@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit",
     "db:start": "docker-compose up -d",
     "db:stop": "docker-compose down",
-    "db:reset": "docker-compose down -v && sleep 1 && docker-compose up -d && sleep 5 && pnpm db:migrate && sleep 1 && pnpm db:seed && sleep 1 && pnpm session create root",
+    "db:reset": "docker-compose down -v && sleep 1 && docker-compose up -d && sleep 5 && pnpm db:migrate && sleep 1 && pnpm db:seed",
     "db:generate": "turbo build --env-mode=loose && drizzle-kit generate",
     "db:generate:custom": "drizzle-kit generate --custom",
     "db:migrate": "drizzle-kit migrate",
@@ -44,7 +44,8 @@
     "#config/*": "./config/*.js",
     "#auth/*": "./app/auth/*.js",
     "#env": "./start/env.js",
-    "#db": "./database/index.js"
+    "#db": "./database/index.js",
+    "#lib/*": "./lib/*.js"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.7.0",
@@ -66,23 +67,28 @@
     "@adonisjs/auth": "^9.2.3",
     "@adonisjs/core": "^6.12.1",
     "@adonisjs/cors": "^2.2.1",
+    "@ai-sdk/openai": "^0.0.40",
     "@biomejs/biome": "^1.8.3",
     "@clack/prompts": "^0.7.0",
     "@types/cli-progress": "^3.11.6",
     "@types/jsonfile": "^6.1.4",
     "@types/jsonwebtoken": "^9.0.6",
     "@vinejs/vine": "^2.1.0",
+    "ai": "3.1.23",
     "argon2": "^0.40.3",
     "axios": "^1.7.2",
     "cli-progress": "^3.12.0",
     "drizzle-orm": "^0.32.1",
+    "drizzle-zod": "^0.5.1",
     "jsonfile": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.4.4",
+    "ollama-ai-provider": "^0.10.0",
     "openapi-types": "7",
     "pm2": "^5.4.2",
     "postgres": "^3.4.4",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "zod": "^3.23.8"
   },
   "hotHook": {
     "boundaries": ["./app/controllers/**/*.ts", "./app/middleware/*.ts"]

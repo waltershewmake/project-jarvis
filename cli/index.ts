@@ -1,4 +1,4 @@
-import { intro, text } from '@clack/prompts';
+import { intro, isCancel, password, spinner, text } from '@clack/prompts';
 import axios from 'axios';
 import { InferSelectModel } from 'drizzle-orm';
 import jsonfile from 'jsonfile';
@@ -17,21 +17,27 @@ let session: Session;
 
 try {
   session = jsonfile.readFileSync('./session.json');
+
+  // try to login to make sure the session is valid
+  await axios.get('http://localhost:3333/me', {
+    headers: {
+      Authorization: `Bearer ${session.token}`,
+    },
+  });
 } catch (error) {
   const email = await text({
     message: 'Enter your email',
     placeholder: 'john@doe.com',
   });
-  const password = await text({
+  const _password = await password({
     message: 'Enter your password',
-    placeholder: '********',
   });
 
   const response = await axios.post(
     'http://localhost:3333/login',
     {
       email,
-      password,
+      password: _password,
     },
     {
       headers: {
@@ -60,4 +66,28 @@ const client = axios.create({
 type User = InferSelectModel<typeof UserSchema>;
 const { data: user } = await client.get<User>('/me');
 
-intro(`Welcome, ${user.salutation} ${user.lastName}.`);
+intro(
+  `Welcome, ${user.salutation} ${user.lastName}. How may I assist you today?`
+);
+
+while (true) {
+  const input = await text({
+    message: 'Type a message',
+  });
+
+  if (isCancel(input)) {
+    process.exit(0);
+  }
+
+  const s = spinner();
+
+  s.start('Thinking...');
+  try {
+    const response = await client.post('/chat', {
+      message: input,
+    });
+    s.stop(JSON.stringify(response.data));
+  } catch (error) {
+    s.stop(error.response.data.message ?? 'Something went wrong');
+  }
+}
