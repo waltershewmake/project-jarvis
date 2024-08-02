@@ -79,7 +79,6 @@ router
       .where(eq(Message.conversationId, conversationId));
 
     const result = await generateText({
-      // @ts-expect-error - no idea why nobody in this space can make a solid working library
       // model: llamacpp.chat(),
       // model: ollama('llama3.1'),
       model: openai('gpt-4o'),
