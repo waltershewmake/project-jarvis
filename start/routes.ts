@@ -119,9 +119,14 @@ router
             content: z
               .string()
               .describe('the content or resource to add to the knowledge base'),
+            isUserSpecific: z
+              .boolean()
+              .describe(
+                'is the content user specific or is it just general info'
+              ),
           }),
-          execute: async ({ content }) => {
-            createResource(user, { content });
+          execute: async ({ content, isUserSpecific }) => {
+            createResource(isUserSpecific ? user : null, { content });
             return content;
           },
         }),
@@ -130,9 +135,17 @@ router
             "Get information from your knowledge base to answer questions. If you don't get any results back, rely on what you do know about yourself and the user.",
           parameters: z.object({
             question: z.string().describe('the users question'),
+            isUserSpecific: z
+              .boolean()
+              .describe(
+                'is the question user specific or is it just general info'
+              ),
           }),
-          execute: async ({ question }) => {
-            const result = await findRelevantContent(user, question);
+          execute: async ({ question, isUserSpecific }) => {
+            const result = await findRelevantContent(
+              isUserSpecific ? user : null,
+              question
+            );
             console.log(result);
             return result;
           },

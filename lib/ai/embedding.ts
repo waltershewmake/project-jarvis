@@ -1,5 +1,5 @@
 import { embed, embedMany } from 'ai';
-import { cosineDistance, desc, sql } from 'drizzle-orm';
+import { cosineDistance, desc, isNull, sql } from 'drizzle-orm';
 import { InferSelectModel, eq } from 'drizzle-orm';
 import { ollama } from 'ollama-ai-provider';
 import { z } from 'zod';
@@ -47,7 +47,7 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
 };
 
 export const findRelevantContent = async (
-  user: InferSelectModel<typeof User>,
+  user: InferSelectModel<typeof User> | null,
   userQuery: string
 ) => {
   const userQueryEmbedded = await generateEmbedding(userQuery);
@@ -55,19 +55,24 @@ export const findRelevantContent = async (
     Embedding.embedding,
     userQueryEmbedded
   )})`;
-  const similarGuides = await db
-    .select({ name: Embedding.content, similarity })
-    .from(Embedding)
-    // .where(gt(similarity, 0.5))
-    .where(eq(Embedding.userId, user.id))
-    .orderBy((t) => desc(t.similarity))
-    .limit(10);
+  const similarGuides = user
+    ? await db
+        .select({ name: Embedding.content, similarity })
+        .from(Embedding)
+        .where(eq(Embedding.userId, user.id))
+        .orderBy((t) => desc(t.similarity))
+        .limit(10)
+    : await db
+        .select({ name: Embedding.content, similarity })
+        .from(Embedding)
+        .where(isNull(Embedding.userId))
+        .orderBy((t) => desc(t.similarity));
 
   return similarGuides;
 };
 
 export const createResource = async (
-  user: InferSelectModel<typeof User>,
+  user: InferSelectModel<typeof User> | null,
   input: {
     content: string;
   }
@@ -88,7 +93,7 @@ export const createResource = async (
 
     await db.insert(Embedding).values(
       embeddings.map((embedding) => ({
-        userId: user.id,
+        userId: user?.id,
         resourceId: resource.id,
         ...embedding,
       }))

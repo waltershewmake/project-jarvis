@@ -96,7 +96,8 @@ while (true) {
       conversationId,
     })) as { data: { message: string; conversationId: number } };
     conversationId = response.data.conversationId;
-    s.stop(JSON.stringify(response.data.message));
+    // s.stop(JSON.stringify(response.data.message));
+    s.stop(response.data.message);
   } catch (error) {
     s.stop(error.response.data.message ?? 'Something went wrong');
   }
