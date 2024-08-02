@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "node ace serve --watch",
-    "build": "node ace build --ignore-ts-errors && drizzle-kit migrate",
+    "build": "node ace build --ignore-ts-errors && drizzle-kit migrate && cp .env build/.env",
     "start": "pm2-runtime ecosystem.config.cjs",
     "test": "node ace test",
     "format": "biome format . --write",
