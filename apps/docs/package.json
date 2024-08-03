@@ -1,0 +1,6 @@
+{
+  "name": "@jarvis/docs",
+  "scripts": {
+    "dev": "mintlify dev --port 3001"
+  }
+}

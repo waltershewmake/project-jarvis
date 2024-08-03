@@ -1,0 +1,13 @@
+{
+  "name": "@jarvis/cli",
+  "type": "module",
+  "scripts": {
+    "cli": "tsx index.ts"
+  },
+  "dependencies": {
+    "tsx": "^4.16.4",
+    "@clack/prompts": "^0.7.0",
+    "axios": "^1.7.2",
+    "jsonfile": "^6.1.0"
+  }
+}

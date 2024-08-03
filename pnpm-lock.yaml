@@ -8,6 +8,16 @@ importers:
 
   .:
     dependencies:
+      '@biomejs/biome':
+        specifier: ^1.8.3
+        version: 1.8.3
+    devDependencies:
+      typescript:
+        specifier: ~5.4
+        version: 5.4.5
+
+  apps/api:
+    dependencies:
       '@adonisjs/auth':
         specifier: ^9.2.3
         version: 9.2.3(@adonisjs/assembler@7.7.0(typescript@5.4.5))(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.4.5))(@vinejs/vine@2.1.0)(argon2@0.40.3))(@adonisjs/lucid@21.1.1(@adonisjs/assembler@7.7.0(typescript@5.4.5))(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.4.5))(@vinejs/vine@2.1.0)(argon2@0.40.3))(luxon@3.4.4))(@japa/api-client@2.0.3(@japa/assert@3.0.0(@japa/runner@3.1.4)(openapi-types@7.2.3))(@japa/runner@3.1.4))(@japa/plugin-adonisjs@3.0.1(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.4.5))(@vinejs/vine@2.1.0)(argon2@0.40.3))(@japa/api-client@2.0.3(@japa/assert@3.0.0(@japa/runner@3.1.4)(openapi-types@7.2.3))(@japa/runner@3.1.4))(@japa/runner@3.1.4))
@@ -20,12 +30,6 @@ importers:
       '@ai-sdk/openai':
         specifier: ^0.0.40
         version: 0.0.40(zod@3.23.8)
-      '@biomejs/biome':
-        specifier: ^1.8.3
-        version: 1.8.3
-      '@clack/prompts':
-        specifier: ^0.7.0
-        version: 0.7.0
       '@types/cli-progress':
         specifier: ^3.11.6
         version: 3.11.6
@@ -44,9 +48,6 @@ importers:
       argon2:
         specifier: ^0.40.3
         version: 0.40.3
-      axios:
-        specifier: ^1.7.2
-        version: 1.7.2
       cli-progress:
         specifier: ^3.12.0
         version: 3.12.0
@@ -56,9 +57,6 @@ importers:
       drizzle-zod:
         specifier: ^0.5.1
         version: 0.5.1(drizzle-orm@0.32.1(@opentelemetry/api@1.9.0)(knex@3.1.0)(postgres@3.4.4)(react@18.3.1))(zod@3.23.8)
-      jsonfile:
-        specifier: ^6.1.0
-        version: 6.1.0
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -126,6 +124,23 @@ importers:
       typescript:
         specifier: ~5.4
         version: 5.4.5
+
+  apps/cli:
+    dependencies:
+      '@clack/prompts':
+        specifier: ^0.7.0
+        version: 0.7.0
+      axios:
+        specifier: ^1.7.2
+        version: 1.7.2
+      jsonfile:
+        specifier: ^6.1.0
+        version: 6.1.0
+      tsx:
+        specifier: ^4.16.4
+        version: 4.16.4
+
+  apps/docs: {}
 
 packages:
 
@@ -3073,10 +3088,6 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  qs@6.12.3:
-    resolution: {integrity: sha512-AWJm14H1vVaO/iNZ4/hO+HyaTehuy9nRqVdkTqlJt0HWvBiBIEXFmb4C0DGeYo3Xes9rrEW+TxHsaigCbN5ICQ==}
-    engines: {node: '>=0.6'}
-
   qs@6.13.0:
     resolution: {integrity: sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==}
     engines: {node: '>=0.6'}
@@ -3788,7 +3799,7 @@ snapshots:
       file-type: 19.3.0
       inflation: 2.1.0
       media-typer: 1.1.0
-      qs: 6.12.3
+      qs: 6.13.0
       raw-body: 2.5.2
 
   '@adonisjs/config@5.0.2':
@@ -3889,7 +3900,7 @@ snapshots:
       mime-types: 2.1.35
       on-finished: 2.4.1
       proxy-addr: 2.0.7
-      qs: 6.12.3
+      qs: 6.13.0
       tmp-cache: 1.1.0
       type-is: 1.6.18
       vary: 1.1.2
@@ -5663,7 +5674,7 @@ snapshots:
       dezalgo: 1.0.4
       hexoid: 1.0.0
       once: 1.4.0
-      qs: 6.12.3
+      qs: 6.13.0
 
   forwarded@0.2.0: {}
 
@@ -6607,14 +6618,9 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  qs@6.12.3:
-    dependencies:
-      side-channel: 1.0.6
-
   qs@6.13.0:
     dependencies:
       side-channel: 1.0.6
-    optional: true
 
   queue-microtask@1.2.3: {}
 
@@ -6960,7 +6966,7 @@ snapshots:
       formidable: 2.1.2
       methods: 1.1.2
       mime: 2.6.0
-      qs: 6.12.3
+      qs: 6.13.0
       semver: 7.6.3
     transitivePeerDependencies:
       - supports-color

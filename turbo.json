@@ -9,17 +9,22 @@
       "dependsOn": ["^build"],
       "outputs": ["build/**"]
     },
-    "ts-lint": {
+    "typecheck": {
       "dependsOn": ["^topo"],
       "outputs": ["./tsconfig.tsbuildinfo"]
     },
     "check": {
-      "dependsOn": ["format", "lint", "ts-lint"]
+      "dependsOn": ["format", "lint", "^typecheck"]
     },
     "test": {},
     "test:watch": {
       "cache": false,
       "persistent": true
+    },
+    "start": {},
+    "dev": {
+      "persistent": true,
+      "cache": false
     }
   }
 }
